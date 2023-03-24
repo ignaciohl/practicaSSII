@@ -1,16 +1,25 @@
-# This is a sample Python script.
-
-# Press Mayús+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Holhtyda, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+from flask import Flask
+from flask import render_template
+from flask import request
+import sqlite3
+import json
+import plotly.graph_objects as go
+import pandas as pd
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+#crear la bd (tablas)
+con= sqlite3.connect()
+cur=con.cursor()
+cur.execute("CREATE TABLE IF NOT EXISTS devices(id TEXT, ip TEXT, localizacion TEXT,responsable_id TEXT, analisis_id TEXT)")
+cur.execute("CREATE TABLE IF NOT EXISTS alerts(timestamp TEXT, sid INTEGER, msg TEXT,clasificacion TEXT, prioridad INTEGER, protocolo TEXT, origen INTEGER, destino INTEGER, puerto INTEGER  )")
+
+#leer datos proporcionados
+alertas= pd.read_csv('alerts.csv')
+d= open("devices.json")
+dispositivos= json.load(d)
+
+con.commit()
+
+#EJERCICIO 2 - Consultas
+numDispositivos = df_devices['id'].nunique()
