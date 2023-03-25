@@ -41,6 +41,25 @@ con.commit()
 
 #EJERCICIO 2 - Consultas
 df_dispositivos = pd.read_sql_query("SELECT * from devices", con)
-
+df_analisis=pd.read_sql_query("SELECT * FROM analisis",con)
 numDispositivos = df_dispositivos['id'].nunique()
+numAlertas=alertas['sid'].nunique()
+mediaPuertos=df_analisis['puertos_abiertos'].mean()
+desvPuertos=df_analisis['puertos_abiertos'].std()
+mediaServicios=df_analisis['servicios_inseguros'].mean()
+desvServicios=df_analisis['servicios_inseguros'].std()
+mediaVulner=df_analisis['vulnerabilidades_detectadas'].mean()
+desvVulner=df_analisis['vulnerabilidades_detectadas'].std()
+minPuertos=df_analisis['puertos_abiertos'].min()
+maxPuertos=df_analisis['puertos_abiertos'].max()
+minVulner=df_analisis['vulnerabilidades_detectadas'].min()
+maxVulner=df_analisis['vulnerabilidades_detectadas'].max()
 print(numDispositivos)
+print(numAlertas)
+print(mediaPuertos, desvPuertos)
+print(mediaServicios, desvServicios)
+print(mediaVulner, desvVulner)
+print(minPuertos, maxPuertos)
+print(minVulner, maxVulner)
+
+
