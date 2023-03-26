@@ -22,9 +22,10 @@ cur=con.cursor()
 
 
 cur.execute("CREATE TABLE IF NOT EXISTS responsable(nombre TEXT PRIMARY_KEY, telefono TEXT, rol TEXT)")
-cur.execute("CREATE TABLE IF NOT EXISTS analisis(id INTEGER PRIMARY_KEY, puertos_abiertos TEXT, servicios INTEGER, servicios_inseguros INTEGER, vulnerabilidades_detectadas INTEGER)")
+cur.execute("CREATE TABLE IF NOT EXISTS analisis(id INTEGER PRIMARY_KEY, puertos_abiertos TEXT, numPuertosAbiertos INTEGER, servicios INTEGER, servicios_inseguros INTEGER, vulnerabilidades_detectadas INTEGER)")
 cur.execute("CREATE TABLE IF NOT EXISTS devices(id TEXT, ip TEXT, localizacion TEXT,responsable_id TEXT, analisis_id INTEGER, FOREIGN KEY(responsable_id) REFERENCES responsable(nombre), FOREIGN KEY(analisis_id) REFERENCES analisis(id))")
 cur.execute("CREATE TABLE IF NOT EXISTS alerts(timestamp TEXT, sid INTEGER, msg TEXT,clasificacion TEXT, prioridad INTEGER, protocolo TEXT, origen INTEGER, destino INTEGER, puerto INTEGER  )")
+
 
 '''
 ## datos tabla responsable
@@ -37,13 +38,13 @@ cur.execute("INSERT INTO responsable VALUES ('admin', '656445552','Administracio
 cur.execute("INSERT INTO responsable VALUES ('admin','656445552','Administracion de sistemas')")
 
 # datos tabla analisis
-cur.execute("INSERT INTO analisis VALUES(1, '80/TCP, 443/TCP, 3306/TCP, 40000/UDP', 3, 0, 15)")
-cur.execute("INSERT INTO analisis VALUES(2, 'None', 0, 0, 4)")
-cur.execute("INSERT INTO analisis VALUES(3, '1194/UDP, 8080/TCP,8080/UDP, 40000/UDP', 1, 1, 52)")
-cur.execute("INSERT INTO analisis VALUES(4, '443/UDP, 80/TCP', 1, 0,3)")
-cur.execute("INSERT INTO analisis VALUES(5, '80/TCP, 67/UDP, 68/UDP', 2, 2, 12)")
-cur.execute("INSERT INTO analisis VALUES(6, '8080/TCP, 3306/TCP, 3306/UDP', 2, 0, 2)")
-cur.execute("INSERT INTO analisis VALUES(7, '80/TCP, 443/TCP, 9200/TCP, 9300/TCP, 5601/TCP', 3, 2, 21)")
+cur.execute("INSERT INTO analisis VALUES(1, '80/TCP, 443/TCP, 3306/TCP, 40000/UDP', 4, 3, 0, 15)")
+cur.execute("INSERT INTO analisis VALUES(2, 'None', 0, 0, 0, 4)")
+cur.execute("INSERT INTO analisis VALUES(3, '1194/UDP, 8080/TCP,8080/UDP, 40000/UDP',4, 1, 1, 52)")
+cur.execute("INSERT INTO analisis VALUES(4, '443/UDP, 80/TCP',2, 1, 0,3)")
+cur.execute("INSERT INTO analisis VALUES(5, '80/TCP, 67/UDP, 68/UDP', 3, 2, 2, 12)")
+cur.execute("INSERT INTO analisis VALUES(6, '8080/TCP, 3306/TCP, 3306/UDP', 3,2, 0, 2)")
+cur.execute("INSERT INTO analisis VALUES(7, '80/TCP, 443/TCP, 9200/TCP, 9300/TCP, 5601/TCP', 5,3, 2, 21)")
 
 # datos tabla devices
 cur.execute("INSERT INTO devices VALUES('web', '172.18.0.0', 'None','admin', 1)")
@@ -60,8 +61,6 @@ con.commit()
 
 
 
-
-
 #EJERCICIO 2 - Consultas
 df_dispositivos = pd.read_sql_query("SELECT * from devices", con)
 df_analisis=pd.read_sql_query("SELECT * FROM analisis",con)
@@ -72,12 +71,16 @@ print("Número de dispositivos: " +str(numDispositivos))
 
 numAlertas= len(df_alertas)
 print("Número de alertas: " + str(numAlertas))
-
 # numAlertas = 200225
 
 
-mediaPuertos=df_analisis['puertos_abiertos'].mean()
-desvPuertos=df_analisis['puertos_abiertos'].std()
+mediaPuertos=df_analisis['numPuertosAbiertos'].mean()
+desvPuertos=df_analisis['numPuertosAbiertos'].std()
+print("Media de puertos: " + str(mediaPuertos))
+print("Desviacion estándar: " + str(desvPuertos))
+
+
+
 mediaServicios=df_analisis['servicios_inseguros'].mean()
 desvServicios=df_analisis['servicios_inseguros'].std()
 mediaVulner=df_analisis['vulnerabilidades_detectadas'].mean()
@@ -86,9 +89,7 @@ minPuertos=df_analisis['puertos_abiertos'].min()
 maxPuertos=df_analisis['puertos_abiertos'].max()
 minVulner=df_analisis['vulnerabilidades_detectadas'].min()
 maxVulner=df_analisis['vulnerabilidades_detectadas'].max()
-print(str(numDispositivos))
-print(numAlertas)
-print(mediaPuertos, desvPuertos)
+
 print(mediaServicios, desvServicios)
 print(mediaVulner, desvVulner)
 print(minPuertos, maxPuertos)
