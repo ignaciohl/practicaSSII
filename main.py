@@ -12,7 +12,7 @@ import pandas as pd
 con= sqlite3.connect('practica.db')
 
 #leer datos proporcionados
-alertas= pd.read_csv('alerts.csv')
+df_alertas= pd.read_csv('alerts.csv')
 d= open("devices.json")
 dispositivos= json.load(d)
 
@@ -26,7 +26,7 @@ cur.execute("CREATE TABLE IF NOT EXISTS analisis(id INTEGER PRIMARY_KEY, puertos
 cur.execute("CREATE TABLE IF NOT EXISTS devices(id TEXT, ip TEXT, localizacion TEXT,responsable_id TEXT, analisis_id INTEGER, FOREIGN KEY(responsable_id) REFERENCES responsable(nombre), FOREIGN KEY(analisis_id) REFERENCES analisis(id))")
 cur.execute("CREATE TABLE IF NOT EXISTS alerts(timestamp TEXT, sid INTEGER, msg TEXT,clasificacion TEXT, prioridad INTEGER, protocolo TEXT, origen INTEGER, destino INTEGER, puerto INTEGER  )")
 
-
+'''
 ## datos tabla responsable
 cur.execute("INSERT INTO responsable VALUES ('admin', '656445552','Administracion de sistemas')")
 cur.execute("INSERT INTO responsable VALUES ('Paco Garcia', '640220120','Direccion')")
@@ -53,7 +53,7 @@ cur.execute("INSERT INTO devices VALUES('router1', '172.1.0.0', 'None','admin', 
 cur.execute("INSERT INTO devices VALUES('dhcp_server', '172.1.0.1', 'Madrid','admiin', 5)")
 cur.execute("INSERT INTO devices VALUES('mysql_db', '172.18.0.1', 'None','admin', 6)")
 cur.execute("INSERT INTO devices VALUES('ELK', '172.18.0.2', 'None','admin', 7)")
-
+'''
 
 
 con.commit()
@@ -66,11 +66,16 @@ con.commit()
 df_dispositivos = pd.read_sql_query("SELECT * from devices", con)
 df_analisis=pd.read_sql_query("SELECT * FROM analisis",con)
 numDispositivos = df_dispositivos['id'].nunique()
-print(str(numDispositivos))
+print("Número de dispositivos: " +str(numDispositivos))
 ## hasta aquí bien, numDispositivos 7
 
 
-numAlertas=alertas['sid'].nunique()
+numAlertas= len(df_alertas)
+print("Número de alertas: " + str(numAlertas))
+
+# numAlertas = 200225
+
+
 mediaPuertos=df_analisis['puertos_abiertos'].mean()
 desvPuertos=df_analisis['puertos_abiertos'].std()
 mediaServicios=df_analisis['servicios_inseguros'].mean()
