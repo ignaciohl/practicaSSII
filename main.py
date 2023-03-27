@@ -4,7 +4,9 @@ from flask import request
 import sqlite3
 import json
 import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 import pandas as pd
+import statistics
 
 
 
@@ -22,12 +24,13 @@ cur=con.cursor()
 
 
 cur.execute("CREATE TABLE IF NOT EXISTS responsable(nombre TEXT PRIMARY_KEY, telefono TEXT, rol TEXT)")
-cur.execute("CREATE TABLE IF NOT EXISTS analisis(id INTEGER PRIMARY_KEY, puertos_abiertos TEXT, numPuertosAbiertos INTEGER, servicios INTEGER, servicios_inseguros INTEGER, vulnerabilidades_detectadas INTEGER)")
-cur.execute("CREATE TABLE IF NOT EXISTS devices(id TEXT, ip TEXT, localizacion TEXT,responsable_id TEXT, analisis_id INTEGER, FOREIGN KEY(responsable_id) REFERENCES responsable(nombre), FOREIGN KEY(analisis_id) REFERENCES analisis(id))")
-cur.execute("CREATE TABLE IF NOT EXISTS alerts(timestamp TEXT, sid INTEGER, msg TEXT,clasificacion TEXT, prioridad INTEGER, protocolo TEXT, origen INTEGER, destino INTEGER, puerto INTEGER  )")
+cur.execute("CREATE TABLE IF NOT EXISTS analisis(id TEXT PRIMARY_KEY, puertos_abiertos TEXT, numPuertosAbiertos TEXT, servicios TEXT, servicios_inseguros TEXT, vulnerabilidades_detectadas INTEGER)")
+cur.execute("CREATE TABLE IF NOT EXISTS devices(id TEXT, ip TEXT, localizacion TEXT,responsable_id TEXT, analisis_id TEXT, FOREIGN KEY(responsable_id) REFERENCES responsable(nombre), FOREIGN KEY(analisis_id) REFERENCES analisis(id))")
+cur.execute("CREATE TABLE IF NOT EXISTS alerts(timestamp TEXT, sid TEXT, msg TEXT,clasificacion TEXT, prioridad TEXT, protocolo TEXT, origen TEXT, destino TEXT, puerto TEXT  )")
 
+#datos tabla alerts
+df_alertas.to_sql('alerts',con,if_exists='replace',index=False)
 
-'''
 ## datos tabla responsable
 cur.execute("INSERT INTO responsable VALUES ('admin', '656445552','Administracion de sistemas')")
 cur.execute("INSERT INTO responsable VALUES ('Paco Garcia', '640220120','Direccion')")
@@ -54,10 +57,8 @@ cur.execute("INSERT INTO devices VALUES('router1', '172.1.0.0', 'None','admin', 
 cur.execute("INSERT INTO devices VALUES('dhcp_server', '172.1.0.1', 'Madrid','admiin', 5)")
 cur.execute("INSERT INTO devices VALUES('mysql_db', '172.18.0.1', 'None','admin', 6)")
 cur.execute("INSERT INTO devices VALUES('ELK', '172.18.0.2', 'None','admin', 7)")
-'''
 
 
-con.commit()
 
 
 
@@ -94,5 +95,36 @@ print(mediaServicios, desvServicios)
 print(mediaVulner, desvVulner)
 print(minPuertos, maxPuertos)
 print(minVulner, maxVulner)
+
+
+#Ejercicio 3
+df_tabla3=pd.read_sql_query("SELECT * FROM alerts JOIN devices ON (alerts.origen = devices.ip) JOIN analisis ON devices.analisis_id = analisis.id", con)
+for i in range(1,4):
+    prioridad=df_tabla3.loc[df_tabla3['prioridad']==i]
+    print("Numero de observaciones:", str(len(prioridad)))
+    print("Numero de valores ausentes:", str(len(prioridad.loc[prioridad['localizacion']=='None'])))
+    print("Mediana:", prioridad['vulnerabilidades_detectadas'].median())
+    print("Media:",prioridad['vulnerabilidades_detectadas'].mean())
+    print("Varianza:", prioridad['vulnerabilidades_detectadas'].var())
+    print("Minimo",prioridad['vulnerabilidades_detectadas'].min())
+    print("Maximo:",prioridad['vulnerabilidades_detectadas'].max())
+
+#Ejercicio 4
+
+apartadoIp = df_alertas[df_alertas['prioridad']==1]
+apartadoIp = apartadoIp.groupby('origen')['sid'].count().reset_index(name='ip problematicas')
+apartadoIp.sort_values(by=['ip problematicas'],ascending=False, inplace=True)
+apartadoIp.head(10).plot(title='Ip problematicas', x="origen", y="ip problematicas", kind="bar")
+plt.show()
+
+timeAlerts = df_alertas.groupby('timestamp')['timestamp'].count().reset_index(name='Alertas en el tiempo')
+timeAlerts['timestamp'] = pd.to_datetime(timeAlerts['timestamp'])
+timeAlerts = timeAlerts.set_index('timestamp')
+timeAlerts.plot(kind='bar')
+plt.xlabel('Fecha')
+plt.ylabel('Alertas')
+plt.title('Numero de alertas en el tiempo')
+plt.show()
+
 
 
