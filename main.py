@@ -78,21 +78,40 @@ mediaPuertos=df_analisis['numPuertosAbiertos'].mean()
 desvPuertos=df_analisis['numPuertosAbiertos'].std()
 print("Media de puertos: " + str(mediaPuertos))
 print("Desviacion estándar: " + str(desvPuertos))
+# media puertos: 3.0
+# desv estándar puertos abiertos: 1.632993161855452
 
 
 
-mediaServicios=df_analisis['servicios_inseguros'].mean()
-desvServicios=df_analisis['servicios_inseguros'].std()
+mediaServiciosInseguros=df_analisis['servicios_inseguros'].mean()
+desvServiciosInseguros=df_analisis['servicios_inseguros'].std()
+print("Media servicios inseguros detectados: " + str(mediaServiciosInseguros))
+print("Desviacion estandar número de servicios inseguros detectados" + str(desvServiciosInseguros))
+
+#Media servicios inseguros detectados: 0.7142857142857143
+#Desviacion estandar número de servicios inseguros detectados0.9511897312113418
+
+
 mediaVulner=df_analisis['vulnerabilidades_detectadas'].mean()
 desvVulner=df_analisis['vulnerabilidades_detectadas'].std()
-minPuertos=df_analisis['puertos_abiertos'].min()
-maxPuertos=df_analisis['puertos_abiertos'].max()
+print("Media vulnerabilidades detectadas: " + str(mediaVulner))
+print("Desviacion estandar del número de vulnerabilidades detectadas: " + str(desvVulner))
+#Media vulnerabilidades detectadas: 15.571428571428571
+#Desviacion estandar del número de vulnerabilidades detectadas: 17.539072028446878
+
+minPuertos=df_analisis['numPuertosAbiertos'].min()
+maxPuertos=df_analisis['numPuertosAbiertos'].max()
+print("Valor mínimo del total de puertos abiertos: " + str(minPuertos))
+print("Valor máximo del total de puertos abiertos: " + str(maxPuertos))
+# Valor mínimo del total de puertos abiertos: 0
+# Valor máximo del total de puertos abiertos: 5
+
 minVulner=df_analisis['vulnerabilidades_detectadas'].min()
 maxVulner=df_analisis['vulnerabilidades_detectadas'].max()
+print("Valor mínimo del numero de vulnerabilidades detectadas: " + str(minVulner))
+print("Valor máximo del numero de vulnerabilidades detectadas: " + str(maxVulner))
+#Valor mínimo del numero de vulnerabilidades detectadas: 2
+#Valor máximo del numero de vulnerabilidades detectadas: 52
 
-print(mediaServicios, desvServicios)
-print(mediaVulner, desvVulner)
-print(minPuertos, maxPuertos)
-print(minVulner, maxVulner)
 
 
