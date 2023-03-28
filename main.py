@@ -79,41 +79,22 @@ mediaPuertos=df_analisis['numPuertosAbiertos'].mean()
 desvPuertos=df_analisis['numPuertosAbiertos'].std()
 print("Media de puertos: " + str(mediaPuertos))
 print("Desviacion estándar: " + str(desvPuertos))
-# media puertos: 3.0
-# desv estándar puertos abiertos: 1.632993161855452
 
 
 
-mediaServiciosInseguros=df_analisis['servicios_inseguros'].mean()
-desvServiciosInseguros=df_analisis['servicios_inseguros'].std()
-print("Media servicios inseguros detectados: " + str(mediaServiciosInseguros))
-print("Desviacion estandar número de servicios inseguros detectados" + str(desvServiciosInseguros))
-
-#Media servicios inseguros detectados: 0.7142857142857143
-#Desviacion estandar número de servicios inseguros detectados0.9511897312113418
-
-
+mediaServicios=df_analisis['servicios_inseguros'].mean()
+desvServicios=df_analisis['servicios_inseguros'].std()
 mediaVulner=df_analisis['vulnerabilidades_detectadas'].mean()
 desvVulner=df_analisis['vulnerabilidades_detectadas'].std()
-print("Media vulnerabilidades detectadas: " + str(mediaVulner))
-print("Desviacion estandar del número de vulnerabilidades detectadas: " + str(desvVulner))
-#Media vulnerabilidades detectadas: 15.571428571428571
-#Desviacion estandar del número de vulnerabilidades detectadas: 17.539072028446878
-
-minPuertos=df_analisis['numPuertosAbiertos'].min()
-maxPuertos=df_analisis['numPuertosAbiertos'].max()
-print("Valor mínimo del total de puertos abiertos: " + str(minPuertos))
-print("Valor máximo del total de puertos abiertos: " + str(maxPuertos))
-# Valor mínimo del total de puertos abiertos: 0
-# Valor máximo del total de puertos abiertos: 5
-
+minPuertos=df_analisis['puertos_abiertos'].min()
+maxPuertos=df_analisis['puertos_abiertos'].max()
 minVulner=df_analisis['vulnerabilidades_detectadas'].min()
 maxVulner=df_analisis['vulnerabilidades_detectadas'].max()
-print("Valor mínimo del numero de vulnerabilidades detectadas: " + str(minVulner))
-print("Valor máximo del numero de vulnerabilidades detectadas: " + str(maxVulner))
-#Valor mínimo del numero de vulnerabilidades detectadas: 2
-#Valor máximo del numero de vulnerabilidades detectadas: 52
 
+print(mediaServicios, desvServicios)
+print(mediaVulner, desvVulner)
+print(minPuertos, maxPuertos)
+print(minVulner, maxVulner)
 
 
 #Ejercicio 3
@@ -128,22 +109,53 @@ for i in range(1,4):
     print("Minimo",prioridad['vulnerabilidades_detectadas'].min())
     print("Maximo:",prioridad['vulnerabilidades_detectadas'].max())
 
+for i in range(7,9):
+    fecha=df_tabla3.loc[(pd.to_datetime(df_tabla3['timestamp']).dt.month==i)]
+    print("Numero de observaciones", str(len(fecha)))
+    print("Numero de valores ausentes", str(len(fecha.loc[fecha['localizacion']=='None'])))
+    print("Mediana:",fecha['vulnerabilidades_detectadas'].median())
+    print("Media:", fecha['vulnerabilidades_detectadas'].mean())
+    print("Varianza:", fecha['vulnerabilidades_detectadas'].var())
+    print("Minimo", fecha['vulnerabilidades_detectadas'].min())
+    print("Maximo:", fecha['vulnerabilidades_detectadas'].max())
+
 #Ejercicio 4
 
 apartadoIp = df_alertas[df_alertas['prioridad']==1]
-apartadoIp = apartadoIp.groupby('origen')['sid'].count().reset_index(name='ip problematicas')
-apartadoIp.sort_values(by=['ip problematicas'],ascending=False, inplace=True)
-apartadoIp.head(10).plot(title='Ip problematicas', x="origen", y="ip problematicas", kind="bar")
+apartadoIp = apartadoIp.groupby('origen')['sid'].count().reset_index(name='IP')
+apartadoIp.sort_values(by=['IP'],ascending=False, inplace=True)
+apartadoIp.head(10).plot(kind='bar',color='green')
+plt.title('IP mas problematicas')
+plt.xlabel('IP')
+plt.ylabel('numero de alertas')
 plt.show()
 
 timeAlerts = df_alertas.groupby('timestamp')['timestamp'].count().reset_index(name='Alertas en el tiempo')
 timeAlerts['timestamp'] = pd.to_datetime(timeAlerts['timestamp'])
 timeAlerts = timeAlerts.set_index('timestamp')
-timeAlerts.plot(kind='bar')
+timeAlerts.plot(kind='line',color='green')
 plt.xlabel('Fecha')
 plt.ylabel('Alertas')
 plt.title('Numero de alertas en el tiempo')
 plt.show()
+
+alertasCateg= df_alertas.groupby('clasificacion')['sid'].count()
+alertasCateg=alertasCateg.sort_values(ascending=False)
+alertasCateg.plot(kind='bar',color='green')
+plt.title('Alertas por categoria')
+plt.xlabel('Categoria')
+plt.ylabel('Numero de alertas')
+plt.show()
+
+#No funciona bien
+df_tabla4 = pd.read_sql_query("SELECT devices.id as id_dev, SUM(servicios_inseguros + vulnerabilidades_detectadas) as total_vulnerabilidades FROM analisis JOIN devices ON analisis.id=devices.analisis_id",con)
+plt.bar(df_tabla4['id_dev'],df_tabla4['total_vulnerabilidades'],color='green')
+plt.title('titulo')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.show()
+
+
 
 
 
