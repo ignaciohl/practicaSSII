@@ -1,12 +1,8 @@
-from flask import Flask
-from flask import render_template
-from flask import request
 import sqlite3
 import json
-import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import pandas as pd
-import statistics
+
 
 
 
@@ -144,6 +140,8 @@ for i in range(7,9):
 ###########################
 
 print("### GRÁFICOS ###")
+
+#Apartado A
 apartadoIp = df_alertas[df_alertas['prioridad']==1]
 apartadoIp = apartadoIp.groupby('origen')['sid'].count().reset_index(name='IP')
 apartadoIp.sort_values(by=['IP'],ascending=False, inplace=True)
@@ -153,6 +151,8 @@ plt.xlabel('IP')
 plt.ylabel('Num alertas tipo 1')
 plt.show()
 
+
+#Apartado B
 timeAlerts = df_alertas.groupby('timestamp')['timestamp'].count().reset_index(name='Alertas en el tiempo')
 timeAlerts['timestamp'] = pd.to_datetime(timeAlerts['timestamp'])
 timeAlerts = timeAlerts.set_index('timestamp')
@@ -162,6 +162,8 @@ plt.ylabel('Alertas')
 plt.title('Numero de alertas en el tiempo')
 plt.show()
 
+
+#Apartado C
 alertasCateg= df_alertas.groupby('clasificacion')['sid'].count()
 alertasCateg=alertasCateg.sort_values(ascending=False)
 alertasCateg.plot(kind='bar',color='green')
@@ -170,6 +172,8 @@ plt.xlabel('Categoria')
 plt.ylabel('Numero de alertas')
 plt.show()
 
+
+#Apartado D
 df_analisis['total_vulnerabilidades']=df_analisis['servicios_inseguros']+df_analisis['vulnerabilidades_detectadas']
 plt.bar(df_dispositivos['id'],df_analisis['total_vulnerabilidades'],color='green')
 plt.title('Dispositivos más vulnerables')
@@ -178,21 +182,26 @@ plt.ylabel('Vulnerabilidades')
 plt.show()
 
 
-df_servicios = df_analisis[['numPuertosAbiertos', 'servicios']]
-df_servicios = df_servicios.groupby('servicios').mean()
-df_servicios.plot(kind='bar', color='green')
-plt.title('Titulo')
-plt.xlabel('x')
-plt.ylabel('y')
-plt.show()
-#--
+
+#Apartado E.1
 df_inseguros = df_analisis[['numPuertosAbiertos', 'servicios_inseguros']]
 df_inseguros = df_inseguros.groupby('servicios_inseguros').mean()
 df_inseguros.plot(kind='bar', color='green')
-plt.title('Titulo')
-plt.xlabel('x')
-plt.ylabel('y')
+plt.title('Servicios inseguros')
+plt.xlabel('Servicios')
+plt.ylabel('Media de puertos abiertos')
 plt.show()
+
+#Apartado E.2
+df_servicios = df_analisis[['numPuertosAbiertos', 'servicios']]
+df_servicios = df_servicios.groupby('servicios').mean()
+df_servicios.plot(kind='bar', color='green')
+plt.title('Servicios detectados')
+plt.xlabel('Servicios')
+plt.ylabel('Media de puertos abiertos')
+plt.show()
+#--
+
 
 
 
